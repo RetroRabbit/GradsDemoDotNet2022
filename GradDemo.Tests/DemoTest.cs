@@ -63,5 +63,28 @@ namespace GradDemo.Tests
             Assert.NotNull(resultContent);
             Assert.IsTrue($"Hello, {inputName}!" == resultContent);
         }
+
+        [Test]
+        public async Task ComplexTest()
+        {
+            var input = new ComplexRequest()
+            {
+                Name = "Tommy",
+                UseNewLines = true
+            };
+
+            var tooFewRepeatsRequest = await CallHelper.PostAndDeserialize<Response<string>>(_httpClient, $"demo/greet-many/repeat/{-5}", input);
+
+            Assert.IsFalse(tooFewRepeatsRequest.httpResponse.IsSuccessStatusCode);
+
+            var postTestResponse = await CallHelper.PostAndDeserialize<Response<string>>(_httpClient, $"demo/greet-many/repeat/{5}", input);
+
+            Assert.IsTrue(postTestResponse.httpResponse.IsSuccessStatusCode);
+            Assert.IsTrue(postTestResponse.content.Success);
+
+            var resultContent = postTestResponse.content.Payload;
+
+            Assert.NotNull(resultContent);
+        }
     }
 }

@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace GradDemo.Api.Models
 {
-    public class HelloRequest
+    public class ComplexRequest
     {
         public string Name { get; set; }
-        public string OtherName { get; set; }
-        public string LastName { get; set; }
+        public bool UseNewLines { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace GradDemo.Api.Controllers
@@ -30,6 +31,12 @@ namespace GradDemo.Api.Controllers
             return Response<string>.Successful("Hello");
         }
 
+        [HttpGet("should-fail")]
+        public Response<string> ShouldFail()
+        {
+            return Response<string>.Error("Fails for test purposes");
+        }
+
         [HttpPost("say-hello")]
         public Response<string> SayHello([FromBody] string name)
         {
@@ -39,16 +46,35 @@ namespace GradDemo.Api.Controllers
             return Response<string>.Successful($"Hello, {name}!");
         }
 
-        [HttpGet("should-fail")]
-        public Response<string> ShouldFail()
+        [HttpPost("greet-many/repeat/{number}")]
+        public Response<string> GreetManyPeople(int number, [FromBody] ComplexRequest inputs)
         {
-            return Response<string>.Error("Fails for test purposes");
-        }
+            // validate things
+            // consider api standards - exceptions or error responses
+            if (number < 1) throw new ArgumentException("I must perform at least one greeting!");
+            if (inputs == null)
+            {
+                return Response<string>.Error($"Insufficient inputs");
+            }
 
-        [HttpPost("say-hello-to-more-people/{number}")]
-        public Response<string> SayHelloToLotsOfPeople(int number, [FromBody] HelloRequest name)
-        {
-            return Response<string>.Successful($"[{number}] Hello {name.Name} and {name.OtherName} and especially you {name.LastName}");
+            // chunky code in controller
+            StringBuilder builder = new StringBuilder("Hello");
+
+            for (int i = 0; i < number; i++)
+            {
+                if (inputs.UseNewLines)
+                {
+                    builder.AppendLine($"Hello");
+                }
+                else
+                {
+                    builder.Append($", hello");
+                }
+            }
+
+            builder.Append("!");
+
+            return Response<string>.Successful(builder.ToString());
         }
     }
 }
