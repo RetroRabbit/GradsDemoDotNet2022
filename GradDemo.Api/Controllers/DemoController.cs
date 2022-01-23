@@ -1,4 +1,5 @@
 ﻿using GradDemo.Api.Models;
+using GradDemo.Api.Providers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -19,16 +20,18 @@ namespace GradDemo.Api.Controllers
         };
 
         private readonly ILogger<DemoController> _logger;
+        private readonly DemoProvider _demo;
 
-        public DemoController(ILogger<DemoController> logger)
+        public DemoController(ILogger<DemoController> logger, DemoProvider demo)
         {
             _logger = logger;
+            _demo = demo;
         }
 
         [HttpGet]
         public Response<string> Demo()
         {
-            return Response<string>.Successful("Hello");
+            return Response<string>.Successful("Hello"/*_demo.Greeting*/);
         }
 
         [HttpGet("should-fail")]
@@ -64,11 +67,11 @@ namespace GradDemo.Api.Controllers
             {
                 if (inputs.UseNewLines)
                 {
-                    builder.AppendLine($"Hello");
+                    builder.AppendLine($"Hello {inputs.Name}");
                 }
                 else
                 {
-                    builder.Append($", hello");
+                    builder.Append($", hello {inputs.Name}");
                 }
             }
 

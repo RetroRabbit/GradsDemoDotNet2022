@@ -1,3 +1,4 @@
+using GradDemo.Api.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,11 +29,16 @@ namespace GradDemo.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "GradDemo.Api", Version = "v1" });
+            });
+
+            //
+            services.AddTransient(x => new DemoProvider(Configuration.GetValue<string>("demo:greeting"))
+            {
+                // 
             });
         }
 
