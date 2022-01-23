@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradDemo.Api", "GradDemo.Api\GradDemo.Api.csproj", "{CC9D7B2E-27EB-4C42-8B44-01704A046C3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GradDemo.Api", "GradDemo.Api\GradDemo.Api.csproj", "{CC9D7B2E-27EB-4C42-8B44-01704A046C3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradDemo.Tests", "GradDemo.Tests\GradDemo.Tests.csproj", "{1510EF73-E8E9-46EF-A664-37523A5C091F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{CC9D7B2E-27EB-4C42-8B44-01704A046C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC9D7B2E-27EB-4C42-8B44-01704A046C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC9D7B2E-27EB-4C42-8B44-01704A046C3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1510EF73-E8E9-46EF-A664-37523A5C091F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1510EF73-E8E9-46EF-A664-37523A5C091F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1510EF73-E8E9-46EF-A664-37523A5C091F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1510EF73-E8E9-46EF-A664-37523A5C091F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
