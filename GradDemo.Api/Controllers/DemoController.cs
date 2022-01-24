@@ -31,7 +31,7 @@ namespace GradDemo.Api.Controllers
         [HttpGet]
         public Response<string> Demo()
         {
-            return Response<string>.Successful("Hello"/*_demo.Greeting*/);
+            return Response<string>.Successful(_demo.Greeting);
         }
 
         [HttpGet("should-fail")]
@@ -54,30 +54,21 @@ namespace GradDemo.Api.Controllers
         {
             // validate things
             // consider api standards - exceptions or error responses
-            if (number < 1) throw new ArgumentException("I must perform at least one greeting!");
+            if (number < 1)
+            {
+                return Response<string>.Error($"I must perform at least one greeting!");
+                //throw new ArgumentException("I must perform at least one greeting!");
+            }
             if (inputs == null)
             {
                 return Response<string>.Error($"Insufficient inputs");
             }
 
-            // chunky code in controller
-            StringBuilder builder = new StringBuilder("Hello");
-
-            for (int i = 0; i < number; i++)
-            {
-                if (inputs.UseNewLines)
-                {
-                    builder.AppendLine($"Hello {inputs.Name}");
-                }
-                else
-                {
-                    builder.Append($", hello {inputs.Name}");
-                }
-            }
-
-            builder.Append("!");
+            var builder = _demo.BuildGreetingString(number, inputs);
 
             return Response<string>.Successful(builder.ToString());
         }
+
+        
     }
 }

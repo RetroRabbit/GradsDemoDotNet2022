@@ -1,5 +1,6 @@
 using GradDemo.Api;
 using GradDemo.Api.Models;
+using GradDemo.Api.Providers;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -46,7 +47,7 @@ namespace GradDemo.Tests
 
             Assert.NotNull(niceer);
             Assert.IsTrue(niceer.Success);
-            Assert.IsTrue(niceer.Payload.Equals("hello", System.StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(!string.IsNullOrEmpty(niceer.Payload));
         }
 
         [Test]
@@ -75,7 +76,8 @@ namespace GradDemo.Tests
 
             var tooFewRepeatsRequest = await CallHelper.PostAndDeserialize<Response<string>>(_httpClient, $"demo/greet-many/repeat/{-5}", input);
 
-            Assert.IsFalse(tooFewRepeatsRequest.httpResponse.IsSuccessStatusCode);
+            Assert.IsTrue(tooFewRepeatsRequest.httpResponse.IsSuccessStatusCode);
+            Assert.IsFalse(tooFewRepeatsRequest.content.Success);
 
             var postTestResponse = await CallHelper.PostAndDeserialize<Response<string>>(_httpClient, $"demo/greet-many/repeat/{5}", input);
 
