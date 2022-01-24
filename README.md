@@ -4,6 +4,7 @@
 
 1. Visual Studio code 2022 https://visualstudio.microsoft.com/vs/community/
 2. Clone and run. You should see a swagger page here https://localhost:44361/swagger/index.html
+3. AWS CLI https://awscli.amazonaws.com/AWSCLIV2.msi
 
 ## Be more ready - day 2
 
