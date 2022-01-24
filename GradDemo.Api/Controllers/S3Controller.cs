@@ -21,9 +21,9 @@ namespace GradDemo.Api.Controllers
         [HttpGet("UploadFile")]
         public async Task<Response<string>> UploadFileAsync()
         {
-            await S3Provider.UploadFileAsync(_configuration.GetValue<string>("AWS:S3Bucket"));
+            var response = await S3Provider.UploadFileAsync(_configuration.GetValue<string>("AWS:S3Bucket"));
 
-            return Response<string>.Error("TODO");
+            return response;
         }
     }
 }
