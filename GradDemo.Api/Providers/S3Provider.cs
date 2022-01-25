@@ -9,43 +9,48 @@ namespace GradDemo.Api.Providers
 {
     public class S3Provider
     {
-        public static async Task<Response<string>> UploadFileAsync(string bucket)
+        private string _bucket;
+        private string _defaultImagePath;
+        private AmazonS3Client _client = new AmazonS3Client();
+
+
+        public S3Provider(string bucket, string defaultImagePath)
         {
-            try
+            _bucket = bucket;
+            _defaultImagePath = defaultImagePath;
+        }
+
+        public async Task UploadFileAsync(string s3Path)
+        {
+            FileInfo file = new FileInfo(_defaultImagePath);
+
+            if (!file.Exists) throw new Exception($"Default File could not be found at {file.FullName}");
+
+            string path = s3Path;
+
+            PutObjectRequest request = new PutObjectRequest()
             {
-                var client = new AmazonS3Client();
+                InputStream = file.OpenRead(),
+                BucketName = _bucket,
+                Key = path // <-- in S3 key represents a path  
+            };
 
-                FileInfo file = new FileInfo(@".\imgs\football.jpg");
-                string path = "demo/football.jpg";
+            PutObjectResponse response = await _client.PutObjectAsync(request);
 
-                PutObjectRequest request = new PutObjectRequest()
-                {
-                    InputStream = file.OpenRead(),
-                    BucketName = bucket,
-                    Key = path // <-- in S3 key represents a path  
-                };
+            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+                throw new Exception($"S3 failure with status code {response.HttpStatusCode}.");
+        }
 
-                PutObjectResponse response = await client.PutObjectAsync(request);
-
-                if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
-                    return Response<string>.Successful(response.HttpStatusCode.ToString());
-                else
-                    return Response<string>.Error(response.HttpStatusCode.ToString());
-
-            }
-            catch (Exception e)
+        public async Task DownloadFileAsync(string s3Path)
+        {
+            GetObjectRequest getRequest = new GetObjectRequest()
             {
-                return Response<string>.Error(e.Message);
-            }
-            //GetObjectRequest getRequest = new GetObjectRequest()
-            //{
-            //    BucketName = bucket,
-            //    Key = path // <-- in S3 key represents a path  
-            //};
-            //GetObjectResponse getResponse = await client.GetObjectAsync(getRequest);
-            //await getResponse.WriteResponseStreamToFileAsync($"download/{getResponse.Key}", false,new System.Threading.CancellationToken());
+                BucketName = _bucket,
+                Key = s3Path // <-- in S3 key represents a path  
+            };
+            GetObjectResponse getResponse = await _client.GetObjectAsync(getRequest);
 
-            //TODO Response
+            await getResponse.WriteResponseStreamToFileAsync($"download/{getResponse.Key}", false, new System.Threading.CancellationToken());
         }
     }
 }
