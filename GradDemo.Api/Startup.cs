@@ -39,8 +39,11 @@ namespace GradDemo.Api
                 .AddRoles<IdentityRole>()
                 .AddDefaultTokenProviders();
 
-            services.AddDbContext<ApplicationDbContext>
-                (opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            if (!IntergrationTesting)
+            {
+                services.AddDbContext<ApplicationDbContext>
+                    (opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            }
 
             services.AddSwaggerGen(c =>
             {
@@ -79,7 +82,10 @@ namespace GradDemo.Api
                 endpoints.MapControllers();
             });
 
-            db.Database.Migrate();
+            if (!IntergrationTesting)
+            {
+                db.Database.Migrate();
+            }
         }
     }
 }

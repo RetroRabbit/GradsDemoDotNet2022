@@ -50,11 +50,13 @@ namespace GradDemo.Api.Controllers
             var countofContacts = await _db.Contacts.CountAsync();
 
             var contact = await _db.Contacts.Where(x => x.Id == 3).FirstOrDefaultAsync();
-            contact.Name = "New name for test";
+            if (contact != null)
+            {
+                contact.Name = "New name for test";
+                await _db.SaveChangesAsync();
+            }
 
-            await _db.SaveChangesAsync();
-
-            return Response<string>.Successful($"{_demo.Greeting} everyone, there are now {countofContacts} contacts. 3 = {contact.Name}");
+            return Response<string>.Successful($"{_demo.Greeting} everyone, there are now {countofContacts} contacts. 3 = {contact?.Name}");
         }
 
         [HttpGet("should-fail")]
