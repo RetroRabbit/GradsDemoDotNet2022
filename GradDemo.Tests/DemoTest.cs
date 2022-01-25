@@ -1,8 +1,10 @@
 using GradDemo.Api;
 using GradDemo.Api.Models;
+using GradDemo.Api.Models.Auth;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace GradDemo.Tests
@@ -39,6 +41,12 @@ namespace GradDemo.Tests
         public async Task BasicApiTest()
         {
             var shouldFail = await CallHelper.GetAndDeserialize<Response<string>>(_httpClient, "/Demo");
+            
+            var login = await SuccessLogin();
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", login.Token);
+
+            shouldFail = await CallHelper.GetAndDeserialize<Response<string>>(_httpClient, "/Demo");
 
             Assert.IsTrue(shouldFail.httpResponse.IsSuccessStatusCode);
 
@@ -84,6 +92,21 @@ namespace GradDemo.Tests
             var resultContent = postTestResponse.content.Payload;
 
             Assert.NotNull(resultContent);
+        }
+
+        public async System.Threading.Tasks.Task<TokenResult> SuccessLogin()
+        {
+            var creds = await CallHelper.PostAndDeserialize<DeviceCredentials>(_httpClient, "/auth/register", null);
+
+            Assert.IsTrue(creds.httpResponse.IsSuccessStatusCode);
+            Assert.IsNotNull(creds.content);
+
+            var token = await CallHelper.PostAndDeserialize<TokenResult>(_httpClient, "/auth/token", creds.content);
+
+            Assert.IsTrue(token.httpResponse.IsSuccessStatusCode);
+            Assert.IsNotNull(token.content?.Token);
+
+            return token.content;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using GradDemo.Api.Entities;
 using GradDemo.Api.Models;
 using GradDemo.Api.Providers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,6 +16,7 @@ namespace GradDemo.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class DemoController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -24,39 +27,37 @@ namespace GradDemo.Api.Controllers
         private readonly ILogger<DemoController> _logger;
         private readonly DemoProvider _demo;
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<IdentityUser> _userManager;
 
 
-        public DemoController(ILogger<DemoController> logger, DemoProvider demo, ApplicationDbContext dbContext)
+        public DemoController(ILogger<DemoController> logger, DemoProvider demo, ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _demo = demo;
             _db = dbContext;
+            _userManager = userManager;
         }
 
         [HttpGet]
         public async Task<Response<string>> Demo()
         {
+            var user = await _userManager.GetUserAsync(User);
+
             // add a thing
             await _db.Contacts.AddAsync(new Contact()
             {
                 ContactNumber = "0821231234",
                 Name = "Test",
-                LastName = "LastName"
+                LastName = "LastName",
+                UserId = user.Id
             });
 
             await _db.SaveChangesAsync();
-            
+
             // count of a thing
-            var countofContacts = await _db.Contacts.CountAsync();
+            var countofContacts = await _db.Contacts.Where(x => x.UserId == user.Id).CountAsync();
 
-            var contact = await _db.Contacts.Where(x => x.Id == 3).FirstOrDefaultAsync();
-            if (contact != null)
-            {
-                contact.Name = "New name for test";
-                await _db.SaveChangesAsync();
-            }
-
-            return Response<string>.Successful($"{_demo.Greeting} everyone, there are now {countofContacts} contacts. 3 = {contact?.Name}");
+            return Response<string>.Successful($"{_demo.Greeting} everyone, there are now {countofContacts} contacts.");
         }
 
         [HttpGet("should-fail")]
