@@ -46,7 +46,6 @@ namespace GradDemo.Tests
 
             Assert.NotNull(niceer);
             Assert.IsTrue(niceer.Success);
-            Assert.IsTrue(niceer.Payload.Equals("hello", System.StringComparison.InvariantCultureIgnoreCase));
         }
 
         [Test]
