@@ -1,6 +1,8 @@
-﻿using GradDemo.Api.Models;
+﻿using GradDemo.Api.Entities;
+using GradDemo.Api.Models;
 using GradDemo.Api.Providers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -21,17 +23,38 @@ namespace GradDemo.Api.Controllers
 
         private readonly ILogger<DemoController> _logger;
         private readonly DemoProvider _demo;
+        private readonly ApplicationDbContext _db;
 
-        public DemoController(ILogger<DemoController> logger, DemoProvider demo)
+
+        public DemoController(ILogger<DemoController> logger, DemoProvider demo, ApplicationDbContext dbContext)
         {
             _logger = logger;
             _demo = demo;
+            _db = dbContext;
         }
 
         [HttpGet]
-        public Response<string> Demo()
+        public async Task<Response<string>> Demo()
         {
-            return Response<string>.Successful("Hello"/*_demo.Greeting*/);
+            // add a thing
+            await _db.Contacts.AddAsync(new Contact()
+            {
+                ContactNumber = "0821231234",
+                Name = "Test",
+                LastName = "LastName"
+            });
+
+            await _db.SaveChangesAsync();
+            
+            // count of a thing
+            var countofContacts = await _db.Contacts.CountAsync();
+
+            var contact = await _db.Contacts.Where(x => x.Id == 3).FirstOrDefaultAsync();
+            contact.Name = "New name for test";
+
+            await _db.SaveChangesAsync();
+
+            return Response<string>.Successful($"{_demo.Greeting} everyone, there are now {countofContacts} contacts. 3 = {contact.Name}");
         }
 
         [HttpGet("should-fail")]
